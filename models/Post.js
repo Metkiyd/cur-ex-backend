@@ -2,29 +2,37 @@ import mongoose from "mongoose";
 
 const PostSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    text: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    tags: {
-      type: Array,
-      default: [],
-    },
-    viewsCount: {
-      type: Number,
-      default: 0
-    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+    },
+    number: {
+      type: Number,
+      required: true,
+      unique: true,
+      default: 0
+    },
+    currency: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    balance: {
+      type: Number,
+      default: 0
+    },
+    transactions: {
+      type: Array,
+      default: [],
+    },
+    icon: {
+      type: String,
       required: true,
     },
-    imageUrl: String,
+    sign: {
+      type: String,
+      required: true,
+    },
   }, {
     timestamps: true,
   },

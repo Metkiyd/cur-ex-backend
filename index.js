@@ -33,7 +33,13 @@ app.use('/uploads', express.static('uploads'));
 
 app.post('/auth/register', registerValidation, handeValidationErrors, UserController.register);
 app.post('/auth/login', loginValidation, handeValidationErrors, UserController.login);
-app.get('/auth/me', checkAuth, UserController.getMe);
+app.get('/auth/me', UserController.getMe);
+
+app.get('/posts', PostController.getAll);
+app.get('/posts/:id', PostController.getOne);
+app.post('/posts', postCreateValidation, handeValidationErrors, PostController.create);
+app.patch('/posts/:id', postCreateValidation, handeValidationErrors, PostController.update);
+app.delete('/posts/:id', PostController.remove);
 
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   res.json({
@@ -41,19 +47,13 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   });
 });
 
-app.get('/posts', PostController.getAll);
-app.get('/posts/:id', PostController.getOne);
-app.post('/posts', checkAuth, postCreateValidation, handeValidationErrors, PostController.create);
-app.patch('/posts/:id', checkAuth, postCreateValidation, handeValidationErrors, PostController.update);
-app.delete('/posts/:id', checkAuth, PostController.remove);
-
-
 app.listen(4444, (err) => {
   if (err) {
     return console.log(err);
   }
   console.log('Server OK');
 });
+
 // app.get('/', (req, res) => {
 //
 //   res.send('Hello');

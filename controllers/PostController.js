@@ -59,11 +59,13 @@ export const getOne = async (req, res) => {
 export const create = async (req, res) => {
   try {
     const doc = new PostModel({
-      title: req.body.title,
-      text: req.body.text,
-      imageUrl: req.body.imageUrl,
-      tags: req.body.tags,
       user: req.userId,
+      number: req.body.number,
+      balance: req.body.balance,
+      currency: req.body.currency,
+      icon: req.body.icon,
+      sign: req.body.sign,
+      transactions: req.body.transactions
     });
 
     const post = await doc.save();
@@ -73,7 +75,7 @@ export const create = async (req, res) => {
   } catch (err) {
     console.log('=>err', err)
     res.status(500).json({
-      message: 'Не удалось создать статью',
+      message: 'Не удалось создать кошелёк',
     })
 
   }
@@ -87,11 +89,8 @@ export const update = async (req, res) => {
         _id: postId,
       },
       {
-        title: req.body.title,
-        text: req.body.text,
-        imageUrl: req.body.imageUrl,
         user: req.userId,
-        tags: req.body.tags,
+        balance: req.body.balance,
       },
     );
 
