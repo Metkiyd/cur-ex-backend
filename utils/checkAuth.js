@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 
 export default (req, res,next) => {
   const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
-
+console.log(token)
   if (token) {
     try {
       const decoded = jwt.verify(token, 'secret123');
@@ -10,14 +10,15 @@ export default (req, res,next) => {
       req.userId = decoded._id;
       next();
     } catch (e) {
-      return res.status(403).json({
-        message: 'Нет доступа 1',
+      console.log(e)
+      return res.status(401).json({
+        message: 'Нет доступа, token error',
       })
     }
 
   } else {
-     return res.status(403).json({
-      message: 'Нет доступа 2',
+     return res.status(401).json({
+      message: 'Нет доступа',
     })
   }
 

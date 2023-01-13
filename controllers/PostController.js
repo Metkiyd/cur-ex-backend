@@ -64,8 +64,7 @@ export const create = async (req, res) => {
       balance: req.body.balance,
       currency: req.body.currency,
       icon: req.body.icon,
-      sign: req.body.sign,
-      transactions: req.body.transactions
+      sign: req.body.sign
     });
 
     const post = await doc.save();

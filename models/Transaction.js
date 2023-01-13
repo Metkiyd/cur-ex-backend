@@ -1,32 +1,25 @@
 import mongoose from "mongoose";
 
-const PostSchema = new mongoose.Schema(
+const TransactionSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-    number: {
+    from: {
+      type: String,
+      required: true,
+    },
+    to: {
+      type: String,
+      required: true,
+    },
+    send: {
       type: Number,
       required: true,
-      unique: true,
-      default: 0
     },
-    currency: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    balance: {
+    received: {
       type: Number,
-      default: 0
-    },
-    icon: {
-      type: String,
-      required: true,
-    },
-    sign: {
-      type: String,
       required: true,
     },
   }, {
@@ -34,4 +27,4 @@ const PostSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model('Post', PostSchema);
+export default mongoose.model('Transaction', TransactionSchema);

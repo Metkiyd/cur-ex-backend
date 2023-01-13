@@ -3,7 +3,7 @@ import cors from 'cors'
 import multer from "multer"
 import mongoose from 'mongoose'
 import {registerValidation, loginValidation, postCreateValidation} from "./validations/validations.js";
-import {UserController, PostController} from './controllers/index.js'
+import {UserController, PostController, TransactionController} from './controllers/index.js'
 import {checkAuth, handeValidationErrors} from './utils/index.js'
 
 
@@ -15,7 +15,6 @@ mongoose
   .catch((err) => console.log('DB err', err))
 
 const app = express();
-
 
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
@@ -33,13 +32,17 @@ app.use('/uploads', express.static('uploads'));
 
 app.post('/auth/register', registerValidation, handeValidationErrors, UserController.register);
 app.post('/auth/login', loginValidation, handeValidationErrors, UserController.login);
-app.get('/auth/me', UserController.getMe);
+app.get('/auth/me', checkAuth, UserController.getMe);
 
 app.get('/posts', PostController.getAll);
 app.get('/posts/:id', PostController.getOne);
 app.post('/posts', postCreateValidation, handeValidationErrors, PostController.create);
 app.patch('/posts/:id', postCreateValidation, handeValidationErrors, PostController.update);
 app.delete('/posts/:id', PostController.remove);
+
+app.get('/transactions', TransactionController.getAll);
+app.post('/transactions', TransactionController.create);
+app.delete('/transactions/:id', TransactionController.remove);
 
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   res.json({
@@ -53,9 +56,3 @@ app.listen(4444, (err) => {
   }
   console.log('Server OK');
 });
-
-// app.get('/', (req, res) => {
-//
-//   res.send('Hello');
-//
-// });
