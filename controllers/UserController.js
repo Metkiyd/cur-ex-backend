@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
+import PostModel from "../models/Post.js";
 
 export const register = async (req, res) => {
   try {
@@ -108,3 +109,39 @@ export const getMe = async (req, res) => {
     })
   }
 };
+
+export const update = async (req, res) => {
+  try {
+    const user = req.userId;
+    console.log('=>user', user)
+
+    try {
+      await UserModel.update(
+        {
+          _id: user,
+        },
+        {
+          fullName: req.body.fullName,
+          email: req.body.email,
+          city: req.body.city,
+          birthday: req.body.birthday,
+          phone: req.body.phone,
+        },
+      );
+    } catch (e) {
+      console.log(e)
+    }
+
+
+
+    res.json({
+      success:true,
+    });
+
+  } catch (err) {
+    console.log('=>err', err)
+    res.status(500).json({
+      message: 'Не удалось сохранить изменения',
+    });
+  }
+}

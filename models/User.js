@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema(
     },
     wallets: Array,
     avatarUrl: String,
+    city: String,
+    birthday: String,
+    phone: String,
   }, {
     timestamps: true,
   },

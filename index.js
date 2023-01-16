@@ -33,16 +33,17 @@ app.use('/uploads', express.static('uploads'));
 app.post('/auth/register', registerValidation, handeValidationErrors, UserController.register);
 app.post('/auth/login', loginValidation, handeValidationErrors, UserController.login);
 app.get('/auth/me', checkAuth, UserController.getMe);
+app.patch('/auth/update', checkAuth, handeValidationErrors, UserController.update);
 
-app.get('/posts', PostController.getAll);
+app.get('/posts', checkAuth, PostController.getAll);
 app.get('/posts/:id', PostController.getOne);
-app.post('/posts', postCreateValidation, handeValidationErrors, PostController.create);
-app.patch('/posts/:id', postCreateValidation, handeValidationErrors, PostController.update);
-app.delete('/posts/:id', PostController.remove);
+app.post('/posts', checkAuth, postCreateValidation, handeValidationErrors, PostController.create);
+app.patch('/posts/:id', checkAuth, postCreateValidation, handeValidationErrors, PostController.update);
+app.delete('/posts/:id', checkAuth, PostController.remove);
 
-app.get('/transactions', TransactionController.getAll);
-app.post('/transactions', TransactionController.create);
-app.delete('/transactions/:id', TransactionController.remove);
+app.get('/transactions', checkAuth, TransactionController.getAll);
+app.post('/transactions', checkAuth, TransactionController.create);
+app.delete('/transactions/:id', checkAuth, TransactionController.remove);
 
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
   res.json({

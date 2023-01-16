@@ -2,7 +2,8 @@ import TransactionModel from "../models/Transaction.js";
 
 export const getAll = async (req, res) => {
   try {
-    const transaction = await TransactionModel.find().populate('user').exec();
+    const transaction = await TransactionModel.find(req.body.user);
+    // console.log('=>req.user', req.body.user)
 
     res.json(transaction);
 
@@ -36,7 +37,6 @@ export const create = async (req, res) => {
 
   }
 };
-
 export const remove = async (req, res) => {
   try {
     const transactionId = req.params.id;
