@@ -2,8 +2,11 @@ import PostModel from "../models/Post.js";
 
 export const getAll = async (req, res) => {
   try {
-    const posts = await PostModel.find(req.user);
-    // console.log('=>req.user', req.user)
+    const posts = await PostModel.find(
+      {
+        user: req.userId,
+      },
+    );
 
     res.json(posts);
 
@@ -80,6 +83,7 @@ export const create = async (req, res) => {
 
   }
 };
+
 export const update = async (req, res) => {
   try {
     const postId = req.params.id;

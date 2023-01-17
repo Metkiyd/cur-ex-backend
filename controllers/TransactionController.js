@@ -2,8 +2,11 @@ import TransactionModel from "../models/Transaction.js";
 
 export const getAll = async (req, res) => {
   try {
-    const transaction = await TransactionModel.find(req.body.user);
-    // console.log('=>req.user', req.body.user)
+    const transaction = await TransactionModel.find(
+      {
+        user: req.userId,
+      },
+    );
 
     res.json(transaction);
 

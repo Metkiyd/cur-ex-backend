@@ -29,10 +29,10 @@ export const register = async (req, res) => {
       },
     );
 
-    const { passwordHash, ...userData } = user._doc
+    // const { passwordHash, ...userData } = user._doc
 
     res.json({
-      ...userData,
+      // ...userData,
       token
     });
   } catch (err) {
@@ -72,10 +72,10 @@ export const login = async(req, res) => {
       },
     );
 
-    const { passwordHash, ...userData } = user._doc
+    // const { passwordHash, ...userData } = user._doc
 
     res.json({
-      ...userData,
+      // ...userData,
       token
     });
 
@@ -113,10 +113,9 @@ export const getMe = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const user = req.userId;
-    console.log('=>user', user)
 
     try {
-      await UserModel.update(
+      await UserModel.updateOne(
         {
           _id: user,
         },
@@ -126,6 +125,7 @@ export const update = async (req, res) => {
           city: req.body.city,
           birthday: req.body.birthday,
           phone: req.body.phone,
+          avatarUrl: req.body.avatarUrl,
         },
       );
     } catch (e) {
