@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
-import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
-import PostModel from "../models/Post.js";
+import UserModel from "../models/User.js";
+import {TokenService} from '../services/index.js'
 
 export const register = async (req, res) => {
   try {
@@ -20,20 +20,33 @@ export const register = async (req, res) => {
 
     const user = await doc.save();
 
-    const token = jwt.sign({
-        _id: user._id,
-      },
-      'secret123',
-      {
-        expiresIn: '30d',
-      },
-    );
+    //
+    // const token = jwt.sign({
+    //     _id: user._id,
+    //   },
+    //   'secret123',
+    //   {
+    //     expiresIn: '30d',
+    //   },
+    // );
+    //
 
-    // const { passwordHash, ...userData } = user._doc
+    const tokens = TokenService.generateTokens({
+      _id: user._id,
+    })
+    await TokenService.saveToken(user._id, tokens.refreshToken)
 
+    res.cookie('refreshToken',tokens.refreshToken, {maxAge:30*24*60*60*1000, httpOnly: true})
+
+    const { passwordHash, ...userData } = user._doc
     res.json({
-      // ...userData,
-      token
+      ...userData,
+      ...tokens,
+      //
+      // token
+      //
+
+
     });
   } catch (err) {
     console.log('=>err', err)
@@ -44,7 +57,7 @@ export const register = async (req, res) => {
 
 };
 
-export const login = async(req, res) => {
+export const login = async (req, res) => {
   try {
     const user = await UserModel.findOne({
       email: req.body.email
@@ -63,20 +76,32 @@ export const login = async(req, res) => {
         message: 'Неверный логин или пароль'
       });
     }
-    const token = jwt.sign({
-        _id: user._id,
-      },
-      'secret123',
-      {
-        expiresIn: '30d',
-      },
-    );
 
-    // const { passwordHash, ...userData } = user._doc
+    //
+    // const token = jwt.sign({
+    //     _id: user._id,
+    //   },
+    //   'secret123',
+    //   {
+    //     expiresIn: '30d',
+    //   },
+    // );
+    //
+
+    const tokens = TokenService.generateTokens({
+      _id: user._id,
+    })
+    await TokenService.saveToken(user._id, tokens.refreshToken)
+
+    res.cookie('refreshToken',tokens.refreshToken, {maxAge:30*24*60*60*1000, httpOnly: true})
+    const { passwordHash, ...userData } = user._doc
 
     res.json({
-      // ...userData,
-      token
+      ...userData,
+      ...tokens,
+      //
+      // token
+      //
     });
 
   } catch (err) {
@@ -91,6 +116,7 @@ export const login = async(req, res) => {
 export const getMe = async (req, res) => {
   try {
     const user = await UserModel.findById(req.userId);
+    // console.log('=>user', user)
 
     if (!user) {
       return res.status(404).json({
@@ -144,4 +170,62 @@ export const update = async (req, res) => {
       message: 'Не удалось сохранить изменения',
     });
   }
+}
+
+export const logout = async (req, res) => {
+  try {
+    const {refreshToken} = req.cookies
+    const tokend = await TokenService.removeToken(refreshToken)
+    res.clearCookie('refreshToken')
+    res.json(tokend)
+
+
+  } catch (e) {
+    console.log(e)
+
+  }
+
+}
+export const refresh = async (req, res) => {
+  try {
+    const {refreshToken} = req.cookies
+
+
+    if (!refreshToken) {
+      return res.status(404).json({
+        message: 'token error'
+      });
+    }
+
+    const userData = TokenService.validateRefreshToken(refreshToken)
+
+    const tokenFromDB = await TokenService.findToken(refreshToken)
+
+    if (!userData || !tokenFromDB) {
+      return res.status(404).json({
+        message: 'token and user errors'
+      });
+    }
+
+    const user = await UserModel.findById(userData._id)
+
+
+
+    const tokens = TokenService.generateTokens({
+      _id: user._id,
+    })
+    await TokenService.saveToken(user._id, tokens.refreshToken)
+
+    res.cookie('refreshToken',tokens.refreshToken, {maxAge:30*24*60*60*1000, httpOnly: true})
+    const { passwordHash, ...userDatan } = user._doc
+    res.json({
+      ...userDatan,
+      ...tokens
+    })
+
+  } catch (e) {
+    console.log(e)
+
+  }
+
 }
