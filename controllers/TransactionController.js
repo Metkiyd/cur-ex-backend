@@ -4,7 +4,7 @@ export const getAll = async (req, res) => {
   try {
     const transaction = await TransactionModel.find(
       {
-        user: req.userId,
+        user: req.user._id,
       },
     );
 
@@ -21,7 +21,7 @@ export const getAll = async (req, res) => {
 export const create = async (req, res) => {
   try {
     const doc = new TransactionModel({
-      user: req.userId,
+      user: req.user._id,
       from: req.body.from,
       to: req.body.to,
       send: req.body.send,

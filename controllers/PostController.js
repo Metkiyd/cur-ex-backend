@@ -4,66 +4,67 @@ export const getAll = async (req, res) => {
   try {
     const posts = await PostModel.find(
       {
-        user: req.userId,
+        user: req.user._id,
       },
     );
+
 
     res.json(posts);
 
   } catch (err) {
     console.log('=>err', err)
     res.status(500).json({
-      message: 'Не удалось получить статьи',
+      message: 'Не удалось найти кошельки',
     })
   }
 };
 
-export const getOne = async (req, res) => {
-  try {
-    const postId = req.params.id;
-
-    PostModel.findOneAndUpdate(
-      {
-        _id: postId,
-      },
-      {
-        $inc: {viewsCount: 1},
-      },
-      {
-        returnDocument: 'after',
-      },
-      (err, doc) => {
-
-        if (err) {
-          console.log('=>err', err)
-          return res.status(500).json({
-            message: 'Не удалось вернуть статью',
-          });
-        }
-
-        if (!doc) {
-          return res.status(404).json({
-            message: 'Статья не найдена',
-          });
-        }
-
-        res.json(doc);
-      },
-    );
-
-
-  } catch (err) {
-    console.log('=>err', err)
-    res.status(500).json({
-      message: 'Не удалось получить статьи',
-    })
-  }
-};
+// export const getOne = async (req, res) => {
+//   try {
+//     const postId = req.params.id;
+//
+//     PostModel.findOneAndUpdate(
+//       {
+//         _id: postId,
+//       },
+//       {
+//         $inc: {viewsCount: 1},
+//       },
+//       {
+//         returnDocument: 'after',
+//       },
+//       (err, doc) => {
+//
+//         if (err) {
+//           console.log('=>err', err)
+//           return res.status(500).json({
+//             message: 'Не удалось вернуть статью',
+//           });
+//         }
+//
+//         if (!doc) {
+//           return res.status(404).json({
+//             message: 'Статья не найдена',
+//           });
+//         }
+//
+//         res.json(doc);
+//       },
+//     );
+//
+//
+//   } catch (err) {
+//     console.log('=>err', err)
+//     res.status(500).json({
+//       message: 'Не удалось получить статьи',
+//     })
+//   }
+// };
 
 export const create = async (req, res) => {
   try {
     const doc = new PostModel({
-      user: req.userId,
+      user: req.user._id,
       number: req.body.number,
       balance: req.body.balance,
       currency: req.body.currency,
@@ -93,7 +94,7 @@ export const update = async (req, res) => {
         _id: postId,
       },
       {
-        user: req.userId,
+        user: req.user._id,
         balance: req.body.balance,
       },
     );
@@ -105,7 +106,7 @@ export const update = async (req, res) => {
   } catch (err) {
     console.log('=>err', err)
     res.status(500).json({
-      message: 'Не удалось обновить статью',
+      message: 'Не удалось обновить кошелёк',
     });
   }
 }
@@ -122,13 +123,13 @@ export const remove = async (req, res) => {
         if (err) {
           console.log('=>err', err)
           res.status(500).json({
-            message: 'Не удалось удалить статью',
+            message: 'Не удалось удалить кошелёк',
           })
         }
 
         if (!doc) {
           return res.status(404).json({
-            message: 'Статья не найдена',
+            message: 'Кошелёк не найден',
           });
         }
 
@@ -142,7 +143,7 @@ export const remove = async (req, res) => {
   } catch (err) {
     console.log('=>err', err)
     res.status(500).json({
-      message: 'Не удалось получить статьи',
+      message: 'Не удалось найти кошельки',
     })
   }
 };

@@ -113,32 +113,50 @@ export const login = async (req, res) => {
 
 };
 
-export const getMe = async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.userId);
-    // console.log('=>user', user)
 
-    if (!user) {
-      return res.status(404).json({
-        message: 'Пользователь не найден'
-      })
+export const refresh = async (req, res) => {
+  try {
+    const {refreshToken} = req.cookies
+    // console.log('=>refreshToken', refreshToken)
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        message: 'cookies token error'
+      });
     }
 
-    const { passwordHash, ...userData } = user._doc
+    const userData = TokenService.validateRefreshToken(refreshToken)
 
-    res.json(userData);
+    const tokenFromDB = await TokenService.findToken(refreshToken)
 
-  } catch (err) {
-    console.log('=>err', err)
-    res.status(500).json({
-      message: 'Не удалось ',
+    if (!userData || !tokenFromDB) {
+      return res.status(401).json({
+        message: 'Авторизуйтесь заново (refresh token check failed) '
+      });
+    }
+
+    const user = await UserModel.findById(userData._id)
+
+    const tokens = TokenService.generateTokens({
+      _id: user._id,
     })
+    await TokenService.saveToken(user._id, tokens.refreshToken)
+
+    res.cookie('refreshToken',tokens.refreshToken, {maxAge:30*24*60*60*1000, httpOnly: true})
+    const { passwordHash, ...userDatan } = user._doc
+    res.json({
+      ...userDatan,
+      ...tokens
+    })
+
+  } catch (e) {
+    console.log(e)
   }
-};
+}
 
 export const update = async (req, res) => {
   try {
-    const user = req.userId;
+    const user = req.user._id;
 
     try {
       await UserModel.updateOne(
@@ -171,7 +189,6 @@ export const update = async (req, res) => {
     });
   }
 }
-
 export const logout = async (req, res) => {
   try {
     const {refreshToken} = req.cookies
@@ -186,46 +203,26 @@ export const logout = async (req, res) => {
   }
 
 }
-export const refresh = async (req, res) => {
-  try {
-    const {refreshToken} = req.cookies
 
-
-    if (!refreshToken) {
-      return res.status(404).json({
-        message: 'token error'
-      });
-    }
-
-    const userData = TokenService.validateRefreshToken(refreshToken)
-
-    const tokenFromDB = await TokenService.findToken(refreshToken)
-
-    if (!userData || !tokenFromDB) {
-      return res.status(404).json({
-        message: 'token and user errors'
-      });
-    }
-
-    const user = await UserModel.findById(userData._id)
-
-
-
-    const tokens = TokenService.generateTokens({
-      _id: user._id,
-    })
-    await TokenService.saveToken(user._id, tokens.refreshToken)
-
-    res.cookie('refreshToken',tokens.refreshToken, {maxAge:30*24*60*60*1000, httpOnly: true})
-    const { passwordHash, ...userDatan } = user._doc
-    res.json({
-      ...userDatan,
-      ...tokens
-    })
-
-  } catch (e) {
-    console.log(e)
-
-  }
-
-}
+// export const getMe = async (req, res) => {
+//   try {
+//     const user = await UserModel.findById(req.userId);
+//     // console.log('=>user', user)
+//
+//     if (!user) {
+//       return res.status(404).json({
+//         message: 'Пользователь не найден'
+//       })
+//     }
+//
+//     const { passwordHash, ...userData } = user._doc
+//
+//     res.json(userData);
+//
+//   } catch (err) {
+//     console.log('=>err', err)
+//     res.status(500).json({
+//       message: 'Не удалось ',
+//     })
+//   }
+// };

@@ -6,7 +6,7 @@ import TokenModel from '../models/Token.js'
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_ACCESS_SECRET,
-      {expiresIn: '20s'})
+      {expiresIn: '30m'})
 
     const refreshToken = jwt.sign(
       payload,

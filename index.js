@@ -4,7 +4,7 @@ import multer from "multer"
 import mongoose from 'mongoose'
 import {registerValidation, loginValidation, postCreateValidation} from "./validations/validations.js";
 import {UserController, PostController, TransactionController} from './controllers/index.js'
-import {authCheck, checkAuth, handeValidationErrors, router} from './utils/index.js'
+import {authCheck, handeValidationErrors, router} from './utils/index.js'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import * as http from "http";
@@ -35,14 +35,12 @@ app.use(cors({
   credentials: true,
   origin: process.env.CLIENT_URL
 }));
-
 app.use('/uploads', express.static('uploads'));
-
 app.use('/auth', router)
 
 app.get('/posts', authCheck, PostController.getAll);
 //
-app.get('/posts/:id', PostController.getOne);
+// app.get('/posts/:id', PostController.getOne);
 //
 app.post('/posts', authCheck, postCreateValidation, handeValidationErrors, PostController.create);
 app.patch('/posts/:id', authCheck, postCreateValidation, handeValidationErrors, PostController.update);
