@@ -9,13 +9,11 @@ const PostSchema = new mongoose.Schema(
     number: {
       type: Number,
       required: true,
-      unique: true,
       default: 0
     },
     currency: {
       type: String,
       required: true,
-      unique: true
     },
     balance: {
       type: Number,

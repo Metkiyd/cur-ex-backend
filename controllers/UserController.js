@@ -12,7 +12,7 @@ export const register = async (req, res) => {
 
     const doc = new UserModel({
       fullName: req.body.fullName,
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
       passwordHash: hash,
       wallets: req.body.wallets,
       avatarUrl: req.body.avatarUrl,
@@ -60,7 +60,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const user = await UserModel.findOne({
-      email: req.body.email
+      email: req.body.email.toLowerCase()
     });
 
     if (!user) {
@@ -157,7 +157,6 @@ export const refresh = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const user = req.user._id;
-
     try {
       await UserModel.updateOne(
         {
@@ -165,7 +164,7 @@ export const update = async (req, res) => {
         },
         {
           fullName: req.body.fullName,
-          email: req.body.email,
+          email: req.body.email.toLowerCase(),
           city: req.body.city,
           birthday: req.body.birthday,
           phone: req.body.phone,
